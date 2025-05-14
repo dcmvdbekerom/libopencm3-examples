@@ -1,0 +1,32 @@
+https://github.com/WeActStudio/WeActStudio.STM32G0xxC0xxCoreBoard/blob/master/Hardware/WeAct-STM32G0xxC0xxCoreBoard_V10%20SchDoc.pdf
+
+A13: DIO
+A14: CLK  - Button1
+
+B07..       I2C1_SDA
+     ..B06  I2C1_SCL
+C14..
+     ..A12  TIM1_ETR
+C15..
+     ..A11  TIM1_CH4
+3V3..
+     ..A08
+GND..
+     ..A07  SPI1_MOSI
+RST..
+     ..A06  SPI1_MISO
+A00..       
+     ..A05  SPI1_SCK
+A01..   
+     ..A04  SPI1_NSS
+A02..
+     ..5V0
+A03..       
+     ..GND
+
+
+TIM1
+TIM3 
+TIM14 
+TIM16 
+TIM17

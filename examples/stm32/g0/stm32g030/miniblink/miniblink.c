@@ -22,8 +22,8 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 
-#define PORT_LED GPIOC
-#define PIN_LED GPIO8
+#define PORT_LED GPIOA
+#define PIN_LED GPIO4
 
 static void gpio_setup(void)
 {
@@ -31,7 +31,7 @@ static void gpio_setup(void)
 	/* Manually: */
 	//RCC_AHBENR |= RCC_AHBENR_GPIOCEN;
 	/* Using API functions: */
-	rcc_periph_clock_enable(RCC_GPIOC);
+	rcc_periph_clock_enable(RCC_GPIOA);
 
 
 	/* Set GPIO8 (in GPIO port C) to 'output push-pull'. */
@@ -65,7 +65,7 @@ int main(void)
 
 		/* Using API function gpio_toggle(): */
 		gpio_toggle(PORT_LED, PIN_LED);	/* LED on/off */
-		for (i = 0; i < 1000000; i++) {	/* Wait a bit. */
+		for (i = 0; i < 500000; i++) {	/* Wait a bit. */
 			__asm__("nop");
 		}
 	}
