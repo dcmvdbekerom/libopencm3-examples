@@ -17,9 +17,10 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-BINARY = cdcacm
+BINARY = usart-stdio
+
+OBJS = stm32-stdio.o
 
 LDSCRIPT = ../stm32f446_cm3.ld
 
 include ../../Makefile.include
-

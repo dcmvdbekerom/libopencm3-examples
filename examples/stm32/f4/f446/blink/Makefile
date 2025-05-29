@@ -17,9 +17,8 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-BINARY = cdcacm
+BINARY = blink
 
-LDSCRIPT = ../stm32f446_cm3.ld
+LDSCRIPT = ../stm32f446_cm3_bl.ld
 
 include ../../Makefile.include
-
