@@ -2,7 +2,6 @@
 ## This file is part of the libopencm3 project.
 ##
 ## Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
-## Copyright (C) 2010 Piotr Esden-Tempski <piotr@esden.net>
 ##
 ## This library is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU Lesser General Public License as published by
@@ -18,27 +17,31 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-LIBNAME		= opencm3_stm32g0
-DEFS		+= -DSTM32G0
+BINARY = cdcacm_tinyusb
 
-FP_FLAGS	?= -msoft-float
-ARCH_FLAGS	= -mthumb -mcpu=cortex-m0 $(FP_FLAGS)
-
-################################################################################
-# OpenOCD specific variables
-
-OOCD		?= openocd
-OOCD_INTERFACE	?= stlink
-OOCD_TARGET	?= stm32g0x
-
-################################################################################
-# Black Magic Probe specific variables
-# Set the BMP_PORT to a serial port and then BMP is used for flashing
-BMP_PORT	?=
-
-################################################################################
-# texane/stlink specific variables
-#STLINK_PORT	?= :4242
+OBJS = usb_descriptors.o \
+    bsp/board.o \
+    bsp/family.o \
+    tinyusb/src/tusb.o \
+    tinyusb/src/class/cdc/cdc_device.o \
+    tinyusb/src/common/tusb_fifo.o \
+    tinyusb/src/device/usbd.o \
+    tinyusb/src/device/usbd_control.o \
+    tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.o
 
 
-include ../../../../rules.mk
+LDSCRIPT = ../stm32g0B1.ld
+
+include ../../Makefile.include
+
+CFLAGS += -DCFG_TUSB_MCU=OPT_MCU_STM32G0 -DSTM32G0B1xx
+CFLAGS += -I. \
+          -Ibsp \
+          -Itinyusb/src \
+          -Itinyusb/src/class/cdc \
+          -Itinyusb/src/class/cdc/serial \
+          -Itinyusb/src/common \
+          -Itinyusb/src/device \
+          -Itinyusb/src/st/stm32_fsdev
+
+
