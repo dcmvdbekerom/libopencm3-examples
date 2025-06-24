@@ -180,8 +180,8 @@ static inline void board_clock_init(void)
     CRS_CR = (CRS_CR & ~CRS_CR_TRIM) | (32 << CRS_CR_TRIM_SHIFT);
 
     // Enable automatic trimming and frequency error counter
-    //CRS_CR |= CRS_CR_AUTOTRIMEN | CRS_CR_CEN;
-    crs_autotrim_usb_enable();
+    CRS_CR |= CRS_CR_AUTOTRIMEN | CRS_CR_CEN;
+    //crs_autotrim_usb_enable();
 
 
   /* Select HSI48 as USB clock source */

@@ -37,8 +37,6 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 
-
-
 #include "bsp/board_api.h"
 #include "board.h"
 
@@ -106,11 +104,11 @@ void board_init(void) {
 
 
         //systick_set_reload(48000 - 1);  // for 72 MHz, 1ms tick
-        systick_set_reload(rcc_ahb_frequency / 1000);  // for 72 MHz, 1ms tick
-        systick_clear();
-        systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
-        systick_counter_enable();
-        systick_interrupt_enable();
+        // systick_set_reload(rcc_ahb_frequency / 1000);  // for 72 MHz, 1ms tick
+        // systick_clear();
+        // systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
+        // systick_counter_enable();
+        // systick_interrupt_enable();
 
 
 
@@ -266,19 +264,19 @@ size_t board_get_unique_id(uint8_t id[], size_t max_len) {
 
 volatile uint32_t system_ticks = 0;
 
-void SysTick_Handler(void) {
-  system_ticks++;
-  // HAL_IncTick();
-}
+// void SysTick_Handler(void) {
+  // //system_ticks++;
+  // //HAL_IncTick();
+// }
 
 uint32_t board_millis(void) {
   return system_ticks;
 }
 #endif
 
-void HardFault_Handler(void) {
-  __asm("BKPT #0\n");
-}
+// void HardFault_Handler(void) {
+  // __asm("BKPT #0\n");
+// }
 
 // Required by __libc_init_array in startup code if we are compiling using
 // -nostdlib/-nostartfiles.

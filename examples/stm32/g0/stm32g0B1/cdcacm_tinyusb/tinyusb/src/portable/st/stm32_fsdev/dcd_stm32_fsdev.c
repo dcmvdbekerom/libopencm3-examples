@@ -114,7 +114,7 @@
 #include "device/dcd.h"
 
 #if defined(TUP_USBIP_FSDEV_STM32)
-  #include "fsdev_stm32.h"
+  #include "fsdev_stm32_cm3.h"
 #elif defined(TUP_USBIP_FSDEV_CH32)
   #include "fsdev_ch32.h"
 #else
@@ -189,20 +189,20 @@ bool dcd_init(uint8_t rhport, const tusb_rhport_init_t* rh_init) {
   (void) rh_init;
   // Follow the RM mentions to use a special ordering of PDWN and FRES
   for (volatile uint32_t i = 0; i < 200; i++) { // should be a few us
-    asm("NOP");
+    __asm__("NOP"); //DvdB
   }
 
   // Perform USB peripheral reset
   FSDEV_REG->CNTR = USB_CNTR_FRES | USB_CNTR_PDWN;
   for (volatile uint32_t i = 0; i < 200; i++) { // should be a few us
-    asm("NOP");
+    __asm__("NOP"); //DvdB
   }
 
   FSDEV_REG->CNTR &= ~USB_CNTR_PDWN;
 
   // Wait startup time, for F042 and F070, this is <= 1 us.
   for (volatile uint32_t i = 0; i < 200; i++) { // should be a few us
-    asm("NOP");
+    __asm__("NOP"); //DvdB
   }
   FSDEV_REG->CNTR = 0; // Enable USB
 

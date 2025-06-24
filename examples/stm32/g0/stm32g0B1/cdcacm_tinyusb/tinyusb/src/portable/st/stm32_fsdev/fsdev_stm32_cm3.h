@@ -81,11 +81,8 @@
   #define FSDEV_PMA_SIZE (1024u)
 
 #elif CFG_TUSB_MCU == OPT_MCU_STM32G0
-  //#include "stm32g0xx.h"
-  
-  #define USB_BASE              (APBPERIPH_BASE + 0x00005C00UL)
-  
-  
+  #include "stm32g0xx.h"
+
   #define FSDEV_PMA_SIZE (2048u)
   #define USB USB_DRD_FS
 
