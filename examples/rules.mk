@@ -239,6 +239,10 @@ styleclean: $(STYLECHECKFILES:=.styleclean)
 	@printf "  FLASH  $<\n"
 	$(STFLASH) write $(*).bin 0x8000000
 
+%.hid: %.bin
+	@printf "  FLASH  $<\n"
+	hid-flash $(*).bin 1
+
 ifeq ($(BMP_PORT),)
 ifeq ($(OOCD_FILE),)
 %.flash: %.elf
