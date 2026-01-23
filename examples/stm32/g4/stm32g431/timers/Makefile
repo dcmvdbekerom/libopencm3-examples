@@ -17,9 +17,9 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-BINARY = timers
+BINARY = main
 
-OBJS = stm32-stdio.o
+OBJS = clocks.o inout.o print.o utils.o
 
 LDSCRIPT = ../stm32g431.ld
 
