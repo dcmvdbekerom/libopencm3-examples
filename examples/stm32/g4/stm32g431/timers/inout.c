@@ -8,23 +8,23 @@
 // }
 
 
-static void led_setup(void)
+void led_setup(void)
 {
 	rcc_periph_clock_enable(RCC_GPIOC);
 	gpio_mode_setup(LED_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, LED_PIN);
 }
 
-static void led_toggle(void)
+void led_toggle(void)
 {
-	gpio_toggle(PORT_LED, PIN_LED);
+	gpio_toggle(LED_PORT, LED_PIN);
 }
 
-static int button_pressed(void)
+int button_pressed(void)
 {
 	return gpio_get(BUTTON_PORT, BUTTON_PIN);
 }
 
-static void button_setup(void){
+void button_setup(void){
     rcc_periph_clock_enable(RCC_GPIOC);     // button port
     rcc_periph_clock_enable(RCC_SYSCFG);    // needed for EXTI
     gpio_mode_setup(BUTTON_PORT, GPIO_MODE_INPUT, GPIO_PUPD_NONE, BUTTON_PIN);

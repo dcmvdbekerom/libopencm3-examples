@@ -2,6 +2,16 @@
 #include "print.h"
 
 
+static uint16_t start_ndx;
+static uint16_t end_ndx;
+static char buf[BUFLEN+1];
+#define buf_len ((end_ndx - start_ndx) % BUFLEN)
+static inline int inc_ndx(int n) { return ((n + 1) % BUFLEN); }
+static inline int dec_ndx(int n) { return (((n + BUFLEN) - 1) % BUFLEN); }
+
+
+
+
 /* back up the cursor one space */
 static inline void back_up(void)
 {
@@ -113,7 +123,7 @@ int _read(int fd, char *ptr, int len)
 }
 
 
-static void usart_setup(uint32_t dev)
+void usart_setup(uint32_t dev)
 {
     
     rcc_periph_clock_enable(RCC_GPIOB);

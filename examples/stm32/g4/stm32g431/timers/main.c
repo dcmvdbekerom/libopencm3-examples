@@ -4,10 +4,10 @@
 
 void button_isr(void) {
 	if (button_pressed()) {
-        printf("Button pressed!\n");
+        printf("Button pressed !!!\n");
     }
     else {
-        printf("Button released!\n");
+        printf("Button released !!!\n");
     }
 }
 
@@ -40,7 +40,7 @@ int main(void)
 		wait(2000000);
 
 		led_toggle();
-		wait(10000000)
+		wait(10000000);
 
 	}
 

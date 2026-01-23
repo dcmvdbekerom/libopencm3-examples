@@ -1,13 +1,13 @@
 
 #include "clocks.h"
 
-static void clock_setup(void)
+void clock_setup(void)
 {
     rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_96MHZ]); //24, 48, 96, 170
 }
 
 
-static void timer_setup(void) {
+void timer_setup(void) {
     /* Reset TIM2 */
     
     //Setup TIM2 as an edge triggered clock
@@ -58,13 +58,13 @@ static void timer_setup(void) {
 }
 
 
-static void timer_disable_strobe(void)
+void timer_disable_strobe(void)
 {
     timer_set_oc_mode(TIM3, TIM_OC1, TIM_OCM_FORCE_LOW);    
 }
 
 
-static void timer_enable_strobe(void)
+void timer_enable_strobe(void)
 {
     timer_set_oc_mode(TIM3, TIM_OC1, TIM_OCM_PWM1);
 }
