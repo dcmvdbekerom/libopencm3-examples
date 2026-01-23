@@ -7,25 +7,25 @@
 	// button_setup();
 // }
 
-#define SPI1_PORT GPIOB
-#define SPI1_PINS GPIO3|GPIO5
-#define SPI1_AF   GPIO_AF5
+#define SPI3_PORT GPIOB
+#define SPI3_PINS GPIO3|GPIO5
+#define SPI3_AF   GPIO_AF6
 void spi_setup(void){
     // AF5: B3=SCK B5=MOSI
     rcc_periph_clock_enable(RCC_GPIOB);
-    rcc_periph_clock_enable(RCC_SPI1);
+    rcc_periph_clock_enable(RCC_SPI3);
     
-    gpio_mode_setup(SPI1_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, SPI1_PINS);
-    gpio_set_af(SPI1_PORT, SPI1_AF, SPI1_PINS); //TIM2_CH4 at PA10 (AF10)
-    gpio_set_output_options(SPI1_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, SPI1_PINS);
+    gpio_mode_setup(SPI3_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, SPI3_PINS);
+    gpio_set_af(SPI3_PORT, SPI3_AF, SPI3_PINS);
+    gpio_set_output_options(SPI3_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, SPI3_PINS);
 
 
-    spi_disable(SPI1);
-    spi_init_master(SPI1, SPI_CR1_BAUDRATE_FPCLK_DIV_8, SPI_CR1_CPOL_CLK_TO_0_WHEN_IDLE,
+    spi_disable(SPI3);
+    spi_init_master(SPI3, SPI_CR1_BAUDRATE_FPCLK_DIV_2, SPI_CR1_CPOL_CLK_TO_0_WHEN_IDLE,
         SPI_CR1_CPHA_CLK_TRANSITION_1, SPI_CR1_LSBFIRST);
     
-    spi_set_data_size(SPI1, SPI_CR2_DS_16BIT );
-    spi_enable(SPI1);
+    spi_set_data_size(SPI3, SPI_CR2_DS_16BIT );
+    spi_enable(SPI3);
 
 }
 

@@ -47,7 +47,7 @@ void timer_setup(void) {
     timer_set_period(TIM4, N_CHANNEL - 1);
 
     timer_slave_set_mode(TIM3, TIM_SMCR_SMS_ECM1); //count on external trigger
-    timer_slave_set_trigger(TIM3, TIM_SMCR_TS_ITR3); // tim_itr3 = tim4_trgo
+    timer_slave_set_trigger(TIM3, TIM_SMCR_TS_ITR1); // tim_itr3 = tim4_trgo
     timer_slave_set_prescaler(TIM3,  TIM_IC_PSC_8); //divide the TIM4 signal by 8
     timer_set_period(TIM3, 0xFFF - 1);
     
@@ -57,12 +57,12 @@ void timer_setup(void) {
     // #define DMA_CH DMA_CHANNEL1
     // dma_disable_channel(DMA1, DMA_CH);
     // dma_set_peripheral_address(DMA1, DMA_CH, TIM3_CNT); // set peripheral address
-    // dma_set_memory_address(DMA1, DMA_CH, USART3_TX); // set memory address
+    // dma_set_memory_address(DMA1, DMA_CH, SPI3_DR); // set memory address
     // dma_set_number_of_data(DMA1, DMA_CH, 1);// configure number of data to transfer
     // // configure other parameters:
     // dma_set_peripheral_size(DMA1, DMA_CH, DMA_CCR_PSIZE_16BIT );
     // dma_set_memory_size(DMA1, DMA_CH, DMA_CCR_MSIZE_16BIT );
-    // dma_set_read_from_peripheral();
+    // dma_set_read_from_peripheral(DMA1, DMA_CH);
     
     // dmamux_set_dma_channel_request(DMAMUX1, DMA_CH, DMAMUX_CxCR_DMAREQ_ID_TIM3_TRIG);	
     

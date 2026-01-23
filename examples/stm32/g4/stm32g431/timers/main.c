@@ -30,7 +30,8 @@ int main(void)
 
         k += 1;
         printf("<< counting %d >>\n", k);
-        spi_send(SPI1, k);
+        //spi_send(SPI3, k);
+        SPI3_DR = k;
 
 		led_toggle();	
 		wait(200000);
