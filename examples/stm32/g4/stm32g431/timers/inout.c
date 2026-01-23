@@ -7,6 +7,27 @@
 	// button_setup();
 // }
 
+#define SPI1_PORT GPIOB
+#define SPI1_PINS GPIO3|GPIO5
+#define SPI1_AF   GPIO_AF5
+void spi_setup(void){
+    // AF5: B3=SCK B5=MOSI
+    rcc_periph_clock_enable(RCC_GPIOB);
+    rcc_periph_clock_enable(RCC_SPI1);
+    
+    gpio_mode_setup(SPI1_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, SPI1_PINS);
+    gpio_set_af(SPI1_PORT, SPI1_AF, SPI1_PINS); //TIM2_CH4 at PA10 (AF10)
+    gpio_set_output_options(SPI1_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, SPI1_PINS);
+
+
+    spi_disable(SPI1);
+    spi_init_master(SPI1, SPI_CR1_BAUDRATE_FPCLK_DIV_8, SPI_CR1_CPOL_CLK_TO_0_WHEN_IDLE,
+        SPI_CR1_CPHA_CLK_TRANSITION_1, SPI_CR1_LSBFIRST);
+    
+    spi_set_data_size(SPI1, SPI_CR2_DS_16BIT );
+    spi_enable(SPI1);
+
+}
 
 void led_setup(void)
 {

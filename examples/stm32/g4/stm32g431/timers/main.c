@@ -21,6 +21,7 @@ int main(void)
 	led_setup();
 	button_setup();
     usart_setup(USART3);
+    spi_setup();
     
     timer_enable_strobe();	
     
@@ -29,18 +30,19 @@ int main(void)
 
         k += 1;
         printf("<< counting %d >>\n", k);
+        spi_send(SPI1, k);
 
 		led_toggle();	
-		wait(2000000);
+		wait(200000);
 		
         led_toggle();	
-		wait(2000000);
+		wait(200000);
 		
         led_toggle();	
-		wait(2000000);
+		wait(200000);
 
 		led_toggle();
-		wait(10000000);
+		wait(1000000);
 
 	}
 

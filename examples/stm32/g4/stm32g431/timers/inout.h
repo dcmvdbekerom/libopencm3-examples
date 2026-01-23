@@ -8,11 +8,13 @@ extern "C" {
 #include <stdio.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/exti.h>
 #include <libopencm3/stm32/syscfg.h>
 #include <libopencm3/cm3/nvic.h>
 
 //static void gpio_setup(void);
+void spi_setup(void);
 void led_setup(void);
 void led_toggle(void);
 void button_setup(void);
