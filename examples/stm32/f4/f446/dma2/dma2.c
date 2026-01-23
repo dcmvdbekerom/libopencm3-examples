@@ -51,7 +51,7 @@ uint32_t ccr_buf[CMD_SIZE];
 static void dma_setup(uint32_t dma, uint8_t stream){
     
     rcc_periph_clock_enable(RCC_GPIOA); //TODO: not variable
-    rcc_periph_clock_enable(RCC_DMA2); //TODO: not variable
+    rcc_periph_clock_enable(RCC_DMA1); //TODO: not variable
 
     dma_disable_stream(dma, stream);
     //dma_stream_reset(dma, stream);
@@ -61,7 +61,7 @@ static void dma_setup(uint32_t dma, uint8_t stream){
     dma_set_transfer_mode(dma, stream, DMA_SxCR_DIR_MEM_TO_PERIPHERAL);
       
     //dma_set_peripheral_address(dma, stream, GPIOC_BSRR);
-    dma_set_peripheral_address(dma, stream, (uint32_t) &TIM1_CCR3);
+    dma_set_peripheral_address(dma, stream, (uint32_t) &TIM5_CCR3);
     dma_set_peripheral_size(dma, stream, DMA_SxCR_PSIZE_32BIT);    
     
     //dma_set_memory_address(dma, stream, (uint32_t) bsrr_buf);
@@ -78,7 +78,55 @@ static void dma_setup(uint32_t dma, uint8_t stream){
     // gpio_set_output_options(SOFT_I2C_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_100MHZ, SOFT_I2C_PINS);
 
 
+
+int sda_value = 1;
+uint8_t sda_buf[256];
+int sda_size = 0;
+
 }
+
+static void i2c_start(void){
+    if (sda_value == 0) return;
+    sda_buf[sda_size] = 2; //toggle halfway
+    sda_value = 0;
+    sda_size++;
+}
+
+static void i2c_stop(void){
+    if (sda_value == 1) return;
+    sda_buf[sda_size] = 2; //toggle halfway
+    sda_value = 1;
+    sda_size++;
+}
+
+
+static void i2c_read_byte(uint8_t* dest){
+    plan_write_byte(0xFF);
+}
+
+static void i2c_write_byte(uint8_t var){
+
+    uint8_t var_temp = var;
+    for (int i=0; i<8; i++){
+        plan_write_bit(var_temp & 0x01);
+        var_temp >>= 1;
+    }    
+}
+
+static void plan_write_bit(uint8_t bit){
+
+    if (bit == sda_val){
+        //no toggle
+        sda_buf[sda_size] = PERIOD;
+    }
+    else{
+        //toggle
+        sda_buf[sda_size] = 0;
+        sda_val = 1 - sda_val;
+    }
+    sda_size++;
+}
+
 
 
 
@@ -110,8 +158,8 @@ static void spi_setup(void) {
     
 }
 
-#define TIM_PINS GPIO8|GPIO10
-#define PERIOD 8
+#define TIM_PINS GPIO0|GPIO2
+#define PERIOD 4
 static void timer_setup(uint32_t timer) {
     /* Reset TIM2 */
     
@@ -121,10 +169,10 @@ static void timer_setup(uint32_t timer) {
     timer_disable_counter(timer);
     
   	rcc_periph_clock_enable(RCC_GPIOA);
-  	rcc_periph_clock_enable(RCC_TIM1);
+  	rcc_periph_clock_enable(RCC_TIM5);
 
 	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, TIM_PINS);
-    gpio_set_af(GPIOA, GPIO_AF1, TIM_PINS); 
+    gpio_set_af(GPIOA, GPIO_AF2, TIM_PINS); 
     gpio_set_output_options(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, TIM_PINS);
 
     // // External Clock Mode 1 - Rising edges of the selected trigger (TRGI) clock the counter.
@@ -134,7 +182,7 @@ static void timer_setup(uint32_t timer) {
     //timer_slave_set_mode(TIM5, TIM_SMCR_SMS_OFF);
     //timer_slave_set_trigger(TIM2, TIM2_CH3
 
-    timer_set_prescaler(timer, 2 * uc_clock.apb2_frequency / 1000000 / PERIOD - 1);
+    timer_set_prescaler(timer, 2 * uc_clock.apb1_frequency / 1000000 / PERIOD - 1);
 
     timer_set_period(timer, PERIOD - 1);
 
@@ -152,10 +200,10 @@ static void timer_setup(uint32_t timer) {
     timer_enable_oc_output(timer, TIM_OC3);
 
 
-    TIM1_CR1 &= ~TIM_CR1_URS;
+    TIM5_CR1 &= ~TIM_CR1_URS;
     timer_enable_update_event(timer); //TIM1_CR1 &= ~TIM_CR1_UDIS;
     //TIM1_DIER |= TIM_DIER_UDE;
-    TIM1_DIER |= TIM_DIER_CC2DE;
+    TIM5_DIER |= TIM_DIER_CC2DE;
     
     
     // Channel 6
@@ -202,9 +250,9 @@ int main(void)
     }
 
 	gpio_setup();
-    timer_setup(TIM1);
+    timer_setup(TIM5);
     spi_setup();
-    dma_setup(DMA2, DMA_STREAM2);
+    dma_setup(DMA1, DMA_STREAM4);
     //GPIOC_ODR |= 0x00000001;
     count = 0;
 
