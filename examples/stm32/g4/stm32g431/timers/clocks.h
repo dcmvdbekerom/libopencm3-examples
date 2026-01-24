@@ -24,8 +24,7 @@ void timer_isr(void);
 
 #define TIM2_PIN GPIO10
 #define TIM2_AF GPIO_AF10
-//#define TIM2_RATE 16000000
-#define TIM2_RATE 16
+#define TIM2_RATE 16000000
 
 #define TIM4_PIN GPIO12
 #define TIM4_AF GPIO_AF10

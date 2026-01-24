@@ -41,26 +41,40 @@ int main(void)
 	button_setup();
     usart_setup(USART3);
     spi_setup();
+    dac_setup();
+    
     
     timer_enable_strobe();	
     
+    uint16_t dac_mid = 0x1000/2;
+    uint16_t dac_span = 0x1000;
+    
+    uint16_t dac_ch1 = dac_mid - dac_span/2;
+    uint16_t dac_ch2 = dac_mid;
+    
 	/* Blink the LED on the board. */
 	while (1) {
-
+        dac_ch1 += 0x10;
+        if (dac_ch1 >= dac_mid + dac_span/2) dac_ch1 -= dac_span; 
+        dac_ch2 -= 0x10;
+        if (dac_ch2 <  dac_mid - dac_span/2) dac_ch2 += dac_span;
+        
+        dac_update(dac_ch1, dac_ch2);
+        
         n += 1;
         //printf("<< counting %d >>\n", n);
         //spi_send(SPI3, n);
         //SPI3_DR = n;
         //timer_isr();
 
-		led_toggle();	
-		wait(200000);
+		// led_toggle();	
+		// wait(20000);
 		
-        led_toggle();	
-		wait(200000);
+        // led_toggle();	
+		// wait(20000);
 		
-        led_toggle();	
-		wait(200000);
+        // led_toggle();	
+		// wait(20000);
 
 		led_toggle();
 		wait(1000000);

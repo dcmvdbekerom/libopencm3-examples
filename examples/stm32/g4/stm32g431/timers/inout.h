@@ -10,6 +10,7 @@ extern "C" {
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/exti.h>
+#include <libopencm3/stm32/dac.h>
 #include <libopencm3/stm32/syscfg.h>
 #include <libopencm3/cm3/nvic.h>
 
@@ -22,7 +23,8 @@ void led_toggle(void);
 void button_setup(void);
 int button_pressed(void);
 void button_isr(void);
-
+void dac_setup(void);
+void dac_update(uint16_t, uint16_t);
 
 #define LED_PORT GPIOC
 #define LED_PIN GPIO6

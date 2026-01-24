@@ -70,3 +70,19 @@ void exti15_10_isr(void)
         // printf("Button released!\n");
     // }
 }
+
+void dac_setup(void){
+    
+    rcc_periph_clock_enable(RCC_GPIOA);
+    rcc_periph_clock_enable(RCC_DAC1);
+    
+    gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO4|GPIO5);
+    //dac_buffer_enable(DAC1, DAC_CHANNEL_BOTH);
+    dac_set_mode(DAC1,DAC_MCR_MODE1_E_BUFF|DAC_MCR_MODE2_E_BUFF);
+    dac_enable(DAC1,DAC_CHANNEL_BOTH);
+}
+
+void dac_update(uint16_t ch1, uint16_t ch2){
+    dac_load_data_buffer_dual(DAC1, ch1, ch2, DAC_ALIGN_RIGHT12 );
+    
+}
