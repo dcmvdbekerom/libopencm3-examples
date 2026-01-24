@@ -14,6 +14,8 @@ extern "C" {
 #include "print.h"
 #include "utils.h"
 
+int n = 0;
+int n_btn = 0;
 int main(void);
 
 #ifdef __cplusplus

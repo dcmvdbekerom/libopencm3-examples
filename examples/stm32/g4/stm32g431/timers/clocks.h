@@ -11,6 +11,7 @@ extern "C" {
 #include <libopencm3/stm32/dma.h>
 #include <libopencm3/stm32/dmamux.h>
 #include <libopencm3/stm32/spi.h>
+#include <libopencm3/cm3/nvic.h>
 
 
 
@@ -18,7 +19,7 @@ void clock_setup(void);
 void timer_disable_strobe(void);
 void timer_enable_strobe(void);
 void timer_setup(void);
-
+void timer_isr(void);
 
 #define TIM2_PIN GPIO10
 #define TIM2_AF GPIO_AF10

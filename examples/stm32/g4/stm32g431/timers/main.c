@@ -4,17 +4,24 @@
 
 void button_isr(void) {
 	if (button_pressed()) {
-        printf("Button pressed !!!\n");
+        printf("\n[X] Button pressed  (%d)\n", n_btn);
     }
     else {
-        printf("Button released !!!\n");
+        printf("[ ] Button released (%d)\n", n_btn);
+        n_btn++;
     }
 }
+
+void timer_isr(void){
+    //send SPI
+    SPI3_DR = n;
+}
+
 
 
 int main(void)
 {
-    int k=0;
+    
  	
     clock_setup();
     timer_setup();
@@ -28,22 +35,22 @@ int main(void)
 	/* Blink the LED on the board. */
 	while (1) {
 
-        k += 1;
-        printf("<< counting %d >>\n", k);
-        //spi_send(SPI3, k);
-        SPI3_DR = k;
+        n += 1;
+        //printf("<< counting %d >>\n", n);
+        //spi_send(SPI3, n);
+        //SPI3_DR = n;
 
 		led_toggle();	
-		wait(200000);
+		wait(2000000);
 		
         led_toggle();	
-		wait(200000);
+		wait(2000000);
 		
         led_toggle();	
-		wait(200000);
+		wait(2000000);
 
 		led_toggle();
-		wait(1000000);
+		wait(10000000);
 
 	}
 

@@ -48,7 +48,7 @@ int button_pressed(void)
 void button_setup(void){
     rcc_periph_clock_enable(RCC_GPIOC);     // button port
     rcc_periph_clock_enable(RCC_SYSCFG);    // needed for EXTI
-    gpio_mode_setup(BUTTON_PORT, GPIO_MODE_INPUT, GPIO_PUPD_NONE, BUTTON_PIN);
+    gpio_mode_setup(BUTTON_PORT, GPIO_MODE_INPUT, GPIO_PUPD_PULLDOWN, BUTTON_PIN);
     
     exti_select_source(EXTI13, BUTTON_PORT);
     exti_set_trigger(EXTI13, EXTI_TRIGGER_BOTH); //or RISING or FALLING 

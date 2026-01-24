@@ -49,10 +49,12 @@ void timer_setup(void) {
     timer_slave_set_mode(TIM3, TIM_SMCR_SMS_ECM1); //count on external trigger
     timer_slave_set_trigger(TIM3, TIM_SMCR_TS_ITR1); // tim_itr3 = tim4_trgo
     timer_slave_set_prescaler(TIM3,  TIM_IC_PSC_8); //divide the TIM4 signal by 8
-    timer_set_period(TIM3, 0xFFF - 1);
+    timer_set_period(TIM3, 0x10);
+    
+    timer_enable_irq(TIM3, TIM_DIER_TIE);
     
     /* Enable DMA to transfer data at TIM3_CNT*/
-    // TIM_DIER(TIM3) |= TIM_DIER_TDE; //enable DMA request on trigger
+    // timer_enable_irq(TIM3, TIM_DIER_TDE); //enable DMA request on trigger
     
     // #define DMA_CH DMA_CHANNEL1
     // dma_disable_channel(DMA1, DMA_CH);
@@ -84,6 +86,13 @@ void timer_setup(void) {
     timer_enable_counter(TIM4);
     timer_enable_counter(TIM3);
 
+}
+
+void tim3_isr(void){
+    // ISR servicing trigger interrupt
+    timer_clear_flag(TIM3, TIM_SR_TIF);
+    timer_isr();
+    
 }
 
 
