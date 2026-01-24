@@ -23,6 +23,15 @@ extern "C" {
 int _write(int fd, char *ptr, int len);
 int _read(int fd, char *ptr, int len);
 
+//redefine syscalles
+#include <sys/stat.h>
+int _close(int);
+int _fstat(int, struct stat *);
+int _isatty(int);
+int _lseek(int, int, int);
+int _getpid(void);
+int _kill(int, int);
+
 void get_buffered_line(void);
 void usart_setup(uint32_t dev);
 

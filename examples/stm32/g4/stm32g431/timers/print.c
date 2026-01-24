@@ -123,6 +123,15 @@ int _read(int fd, char *ptr, int len)
 }
 
 
+// redefine syscalls:
+int _close(int file) {(void)file; return -1; }
+int _fstat(int file, struct stat *st) {(void)file; (void)st; return 0; }
+int _isatty(int file) {(void)file; return 1; }
+int _lseek(int file, int ptr, int dir) {(void)file; (void)ptr; (void)dir; return 0; }
+int _getpid(void) {return 1; }
+int _kill(int pid, int sig) {(void)pid; (void)sig; return -1; }
+
+
 void usart_setup(uint32_t dev)
 {
     
