@@ -13,6 +13,8 @@ extern "C" {
 #include <libopencm3/stm32/syscfg.h>
 #include <libopencm3/cm3/nvic.h>
 
+
+
 //static void gpio_setup(void);
 void spi_setup(void);
 void led_setup(void);

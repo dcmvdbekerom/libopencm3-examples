@@ -23,7 +23,7 @@ extern "C" {
 int _write(int fd, char *ptr, int len);
 int _read(int fd, char *ptr, int len);
 
-//redefine syscalles
+//redefine syscalls
 #include <sys/stat.h>
 int _close(int);
 int _fstat(int, struct stat *);

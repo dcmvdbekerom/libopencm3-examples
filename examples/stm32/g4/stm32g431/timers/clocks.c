@@ -6,6 +6,8 @@ void clock_setup(void)
     rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_96MHZ]); //24, 48, 96, 170
 }
 
+uint16_t my_buf = 0xAA;
+uint16_t my_buf2 = 0x55;
 
 void timer_setup(void) {
     /* Reset TIM2 */
@@ -17,12 +19,13 @@ void timer_setup(void) {
     
     timer_disable_counter(TIM2);
     timer_disable_counter(TIM4);
-    timer_disable_counter(TIM3);
+    // timer_disable_counter(TIM3);
     
   	rcc_periph_clock_enable(RCC_GPIOA);
   	rcc_periph_clock_enable(RCC_TIM2);
     rcc_periph_clock_enable(RCC_TIM4);
-  	rcc_periph_clock_enable(RCC_TIM3);
+  	// rcc_periph_clock_enable(RCC_TIM3);
+    // rcc_periph_clock_enable(RCC_DMAMUX1);
   	
 
 
@@ -46,20 +49,23 @@ void timer_setup(void) {
 
     timer_set_period(TIM4, N_CHANNEL - 1);
 
-    timer_slave_set_mode(TIM3, TIM_SMCR_SMS_ECM1); //count on external trigger
-    timer_slave_set_trigger(TIM3, TIM_SMCR_TS_ITR1); // tim_itr3 = tim4_trgo
-    timer_slave_set_prescaler(TIM3,  TIM_IC_PSC_8); //divide the TIM4 signal by 8
-    timer_set_period(TIM3, 0x10);
+    // timer_slave_set_mode(TIM3, TIM_SMCR_SMS_ECM1); //count on external trigger
+    // timer_slave_set_trigger(TIM3, TIM_SMCR_TS_ITR1); // tim_itr3 = tim4_trgo
+    // timer_slave_set_prescaler(TIM3,  TIM_IC_PSC_8); //divide the TIM4 signal by 8
+    // timer_set_period(TIM3, 0x10);
     
-    timer_enable_irq(TIM3, TIM_DIER_TIE);
+    //enable trigger interrupt
+    //timer_enable_irq(TIM3, TIM_DIER_TIE);
+    //nvic_enable_irq(NVIC_TIM3_IRQ);
     
-    /* Enable DMA to transfer data at TIM3_CNT*/
+    // /* Enable DMA to transfer data at TIM3_CNT*/
     // timer_enable_irq(TIM3, TIM_DIER_TDE); //enable DMA request on trigger
     
     // #define DMA_CH DMA_CHANNEL1
     // dma_disable_channel(DMA1, DMA_CH);
-    // dma_set_peripheral_address(DMA1, DMA_CH, TIM3_CNT); // set peripheral address
-    // dma_set_memory_address(DMA1, DMA_CH, SPI3_DR); // set memory address
+    
+    // dma_set_peripheral_address(DMA1, DMA_CH, (uint32_t)&TIM3_CNT); // set peripheral address
+    // dma_set_memory_address(DMA1, DMA_CH, (uint32_t)&my_buf); // set memory address
     // dma_set_number_of_data(DMA1, DMA_CH, 1);// configure number of data to transfer
     // // configure other parameters:
     // dma_set_peripheral_size(DMA1, DMA_CH, DMA_CCR_PSIZE_16BIT );
@@ -84,13 +90,14 @@ void timer_setup(void) {
 
     timer_enable_counter(TIM2);
     timer_enable_counter(TIM4);
-    timer_enable_counter(TIM3);
+    // timer_enable_counter(TIM3);
 
 }
 
 void tim3_isr(void){
     // ISR servicing trigger interrupt
     timer_clear_flag(TIM3, TIM_SR_TIF);
+    printf("tim3_isr()\n");
     timer_isr();
     
 }
