@@ -19,7 +19,7 @@
 
 BINARY = main
 
-OBJS = clocks.o inout.o print.o utils.o
+OBJS = clocks.o inout.o print.o utils.o pga.o
 
 LDSCRIPT = ../stm32g431.ld
 

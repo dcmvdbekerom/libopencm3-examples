@@ -1,6 +1,8 @@
 #ifndef PGA_H_
 #define PGA_H_
 
+#include <stdint.h>
+#include "inout.h"
 
 #define PGA_CMD_READ  0x6A
 #define PGA_CMD_WRITE 0x2A
@@ -22,6 +24,20 @@ enum pga_gain {
 
 };
 
+enum pga_zero {
+	PGA_ZERO_1X   = 0xFFF, //capped
+	PGA_ZERO_2X   = 0xFFF, //capped
+	PGA_ZERO_5X   = 0xD26,
+	PGA_ZERO_10X  = 0xC94,
+	PGA_ZERO_20X  = 0xC56,
+	PGA_ZERO_50X  = 0xC34,
+	PGA_ZERO_100X = 0xC29,
+	PGA_ZERO_200X = 0xC24,
+
+};
+
+
+
 
 enum pga_mux {
 	PGA_MUX_VCAL_CH0 = 0x0,
@@ -40,7 +56,6 @@ enum pga_mux {
 	PGA_MUX_CAL4 = 0xF,
 
 };
-
 
 
 

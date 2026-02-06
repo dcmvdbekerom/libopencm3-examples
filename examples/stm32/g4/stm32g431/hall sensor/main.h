@@ -13,6 +13,7 @@ extern "C" {
 #include "inout.h"
 #include "print.h"
 #include "utils.h"
+#include "pga.h" 
 
 int n = 0;
 int n_btn = 0;

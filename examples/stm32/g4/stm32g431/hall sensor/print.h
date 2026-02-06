@@ -39,7 +39,7 @@ void usart_setup(uint32_t dev);
 
 
 #define STDOUT_USART USART3
-#define USART_TX_PIN GPIO9
+#define USART_TX_PIN GPIO9 //B9
 #define USART_AF GPIO_AF7
 
 #ifdef __cplusplus

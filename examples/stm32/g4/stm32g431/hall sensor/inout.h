@@ -18,6 +18,7 @@ extern "C" {
 
 //static void gpio_setup(void);
 void spi_setup(void);
+void spi_write16(uint16_t);
 void led_setup(void);
 void led_toggle(void);
 void button_setup(void);
