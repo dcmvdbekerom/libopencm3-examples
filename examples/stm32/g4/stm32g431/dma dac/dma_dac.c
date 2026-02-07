@@ -33,18 +33,33 @@
 #define TIM1_PORT GPIOA
 #define TIM1_PIN GPIO8
 #define TIM1_AF GPIO_AF6
-#define TIM1_RATE 1000000
+#define TIM1_RATE 5000000
+
+
+
 
 #define TIM3_PORT GPIOA
 #define TIM3_PIN GPIO4
 #define TIM3_AF GPIO_AF2 //CH2
 
-#define N_CHANNEL 16
+#define N_SAMPLE 0x1000 //12 bit
+uint16_t val = 0;
+uint8_t  vala[N_SAMPLE];
+uint16_t valb[N_SAMPLE];
+uint8_t  valc[N_SAMPLE];
 
-#define OUT_PINS GPIO0|GPIO1|GPIO2|GPIO3
+#define BITS(x,y) (((val & (1<<y))>>y) << x)
+
+#define OUTA_PINS GPIO15|GPIO12|GPIO11|GPIO10|GPIO9 
+#define OUTB_PINS GPIO9 |GPIO8 |GPIO7 |GPIO6 |GPIO5 |GPIO4 |GPIO3
+#define OUTC_PINS GPIO11|GPIO10
+
+
+// vala[i] = (BITS(15, 8)|BITS(12,11)|BITS(11,10)|BITS(10,13)|BITS( 9,12)) >> 8;
+// valb[i] = (BITS( 9, 1)|BITS( 8, 0)|BITS( 7, 3)|BITS( 6, 2)|BITS( 5, 5)|BITS( 4, 4)|BITS( 3, 7));
+// valc[i] = (BITS(11, 6)|BITS(10, 9)) >> 8;
 
 static void timer_setup(void) {
-    
     //Setup a timer TIM1
     
     timer_disable_counter(TIM1);
@@ -68,21 +83,33 @@ static void timer_setup(void) {
     gpio_set_af(TIM3_PORT, TIM3_AF, TIM3_PIN); //TIM3_CH2 at PA4 (AF2)
     gpio_set_output_options(TIM3_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, TIM3_PIN);
 
-    gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, OUT_PINS);
-    gpio_set_output_options(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, OUT_PINS);
+    // gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO8);
+    // gpio_set_af(GPIOA, GPIO_AF0, GPIO8); //TIM3_CH2 at PA4 (AF2)
+    // gpio_set_output_options(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, GPIO8);
 
-    
+    // DAC signals:
+    gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, OUTA_PINS);
+    gpio_set_output_options(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, OUTA_PINS);
+
+    gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, OUTB_PINS);
+    gpio_set_output_options(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, OUTB_PINS);
+
+    gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, OUTC_PINS);
+    gpio_set_output_options(GPIOC, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, OUTC_PINS);
+
+
 
     timer_set_master_mode(TIM1, TIM_CR2_MMS_UPDATE);
     //timer_slave_set_mode(TIM2, TIM_SMCR_SMS_OFF); //default
     timer_set_prescaler(TIM1,  rcc_apb1_frequency/TIM1_RATE/2 - 1);
+    //timer_set_prescaler(TIM1,  3);
     timer_set_period(TIM1, 1);
     
     
     timer_slave_set_mode(TIM3, TIM_SMCR_SMS_ECM1); //count on external trigger
     timer_slave_set_trigger(TIM3, TIM_SMCR_TS_ITR0); // tim_itr0 = tim1_trgo
     timer_set_master_mode(TIM3, TIM_CR2_MMS_UPDATE); //forward TIM3's update
-    timer_set_period(TIM3, N_CHANNEL - 1);
+    timer_set_period(TIM3, N_SAMPLE - 1);
 
     // timer_slave_set_mode(TIM3, TIM_SMCR_SMS_ECM1); //count on external trigger
     // timer_slave_set_trigger(TIM3, TIM_SMCR_TS_ITR1); // tim_itr3 = tim4_trgo
@@ -93,33 +120,69 @@ static void timer_setup(void) {
     //timer_enable_irq(TIM3, TIM_DIER_TIE);
     //nvic_enable_irq(NVIC_TIM3_IRQ);
     
-    /* Enable DMA to transfer data at TIM3_CNT*/
-    
-    #define DMA_CH DMA_CHANNEL1
-    dma_disable_channel(DMA1, DMA_CH);
-    
-    dma_set_peripheral_address(DMA1, DMA_CH, (uint32_t)&TIM3_CNT); // set peripheral address
-    dma_set_peripheral_size(DMA1, DMA_CH, DMA_CCR_PSIZE_8BIT );
-    dma_set_read_from_peripheral(DMA1, DMA_CH);
-    
-    
-    dma_set_memory_address(DMA1, DMA_CH, (uint32_t)&GPIOB_ODR); // set memory address
-    dma_set_memory_size(DMA1, DMA_CH, DMA_CCR_MSIZE_8BIT );
-    dma_set_number_of_data(DMA1, DMA_CH, 1);// configure number of data to transfer
-    dma_enable_circular_mode(DMA1, DMA_CH);	
-
     timer_enable_irq(TIM1, TIM_DIER_UDE); //enable DMA request on trigger    
-    dmamux_set_dma_channel_request(DMAMUX1, DMA_CH, DMAMUX_CxCR_DMAREQ_ID_TIM1_UP);	
-    dma_enable_channel(DMA1, DMA_CH); // activate channel
+    
+    /* Enable DMA Ch1 to transfer data to GPIOA_ODR*/
+    dma_disable_channel(DMA1, DMA_CHANNEL1);
+    
+    dma_set_peripheral_address(DMA1, DMA_CHANNEL1, (uint32_t)&GPIOA_ODR+1); // set peripheral address
+    dma_set_peripheral_size(DMA1, DMA_CHANNEL1, DMA_CCR_PSIZE_8BIT );
+    
+    dma_set_memory_address(DMA1, DMA_CHANNEL1, (uint32_t)&vala); // set memory address (high byte)
+    dma_set_memory_size(DMA1, DMA_CHANNEL1, DMA_CCR_MSIZE_8BIT );
+    dma_enable_memory_increment_mode(DMA1, DMA_CHANNEL1);
+    
+    dma_enable_circular_mode(DMA1, DMA_CHANNEL1);	
+    dma_set_number_of_data(DMA1, DMA_CHANNEL1, N_SAMPLE);// configure number of data to transfer
+    dma_set_read_from_memory(DMA1, DMA_CHANNEL1);
+    
+    dmamux_set_dma_channel_request(DMAMUX1, DMA_CHANNEL1, DMAMUX_CxCR_DMAREQ_ID_TIM1_UP);	
+    dma_enable_channel(DMA1, DMA_CHANNEL1); // activate channel
+
+    
+    /* Enable DMA Ch2 to transfer data to GPIOB_ODR*/
+    dma_disable_channel(DMA1, DMA_CHANNEL2);
+    
+    dma_set_peripheral_address(DMA1, DMA_CHANNEL2, (uint32_t)&GPIOB_ODR); // set peripheral address
+    dma_set_peripheral_size(DMA1, DMA_CHANNEL2, DMA_CCR_PSIZE_16BIT );
+    
+    dma_set_memory_address(DMA1, DMA_CHANNEL2, (uint32_t)&valb); // set memory address (high byte)
+    dma_set_memory_size(DMA1, DMA_CHANNEL2, DMA_CCR_MSIZE_16BIT );
+    dma_enable_memory_increment_mode(DMA1, DMA_CHANNEL2);
+    
+    dma_enable_circular_mode(DMA1, DMA_CHANNEL2);	
+    dma_set_number_of_data(DMA1, DMA_CHANNEL2, N_SAMPLE);// configure number of data to transfer
+    dma_set_read_from_memory(DMA1, DMA_CHANNEL2);
+    
+    dmamux_set_dma_channel_request(DMAMUX1, DMA_CHANNEL2, DMAMUX_CxCR_DMAREQ_ID_TIM1_UP);	
+    dma_enable_channel(DMA1, DMA_CHANNEL2); // activate channel
+
+    /* Enable DMA Ch3 to transfer data to GPIOC_ODR*/
+    dma_disable_channel(DMA1, DMA_CHANNEL3);
+    
+    dma_set_peripheral_address(DMA1, DMA_CHANNEL3, (uint32_t)&GPIOC_ODR+1); // set peripheral address
+    dma_set_peripheral_size(DMA1, DMA_CHANNEL3, DMA_CCR_PSIZE_8BIT );
+    
+    dma_set_memory_address(DMA1, DMA_CHANNEL3, (uint32_t)&valc); // set memory address (high byte)
+    dma_set_memory_size(DMA1, DMA_CHANNEL3, DMA_CCR_MSIZE_8BIT );
+    dma_enable_memory_increment_mode(DMA1, DMA_CHANNEL3);
+    
+    dma_enable_circular_mode(DMA1, DMA_CHANNEL3);	
+    dma_set_number_of_data(DMA1, DMA_CHANNEL3, N_SAMPLE);// configure number of data to transfer
+    dma_set_read_from_memory(DMA1, DMA_CHANNEL3);
+    
+    dmamux_set_dma_channel_request(DMAMUX1, DMA_CHANNEL3, DMAMUX_CxCR_DMAREQ_ID_TIM1_UP);	
+    dma_enable_channel(DMA1, DMA_CHANNEL3); // activate channel
+
 
 
     /* Configure Output Compare (OC) mode on CH4 */
     timer_set_oc_value(TIM1, TIM_OC1, 1);
-    timer_set_oc_mode(TIM1, TIM_OC1, TIM_OCM_PWM1); //center strobe on rising edge(*)
+    timer_set_oc_mode(TIM1, TIM_OC1, TIM_OCM_PWM2); //center strobe on rising edge(*)
     timer_enable_oc_output(TIM1, TIM_OC1);
 
-    timer_set_oc_value(TIM3, TIM_OC2, 1);
-    timer_set_oc_mode(TIM3, TIM_OC2, TIM_OCM_PWM1); //center strobe on rising edge(*)
+    timer_set_oc_value(TIM3, TIM_OC2, N_SAMPLE-1);
+    timer_set_oc_mode(TIM3, TIM_OC2, TIM_OCM_PWM2); //center strobe on rising edge(*)
     timer_enable_oc_output(TIM3, TIM_OC2);
 
 
@@ -146,12 +209,20 @@ static void gpio_setup(void)
 	gpio_mode_setup(PORT_LED, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, PIN_LED);
 }
 
+
+
+
 int main(void)
 {
 	int i;
 
-    rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_96MHZ]); //24, 48, 96, 170
-
+    rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_170MHZ]); //24, 48, 96, 170
+    for(i=0; i<N_SAMPLE; i+=1){
+        val += 4;
+        vala[i] = (BITS(15, 8)|BITS(12,11)|BITS(11,10)|BITS(10,13)|BITS( 9,12)) >> 8;
+        valb[i] = (BITS( 9, 1)|BITS( 8, 0)|BITS( 7, 3)|BITS( 6, 2)|BITS( 5, 5)|BITS( 4, 4)|BITS( 3, 7));
+        valc[i] = (BITS(11, 6)|BITS(10, 9)) >> 8;
+    }
 
 	gpio_setup();
     timer_setup();
